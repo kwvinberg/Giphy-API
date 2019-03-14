@@ -1,40 +1,5 @@
-    function searchForGif(){var queryURL = "https://api.giphy.com/v1/gifs/search?q="
-
-       var queryParams = {"api-key": "i5u86hxDFgUmIDDbuFDZ6vsL4wBLI8B6"};
-  
-       queryParams.q = $("#search-term")
-       .val()
-       .trim();
-
-     console.log("---------------\nURL: " + queryURL + "\n---------------");
-     console.log(queryURL + $.param(queryParams));
-     return queryURL + $.param(queryParams);
-   }
-   
-    // @param {object} GiphyData 
-   function updatePage(GiphyData) {
-     
-     var numGiphys = $("#Giphys-count").val();
-   
-     
-     console.log(GiphyData);
-     console.log("------------------------------------");
-   
-     for (var i = 0; i < numGiphys; i++) {
-
-       var Giphys = GiphyData.response.docs[i];
-
-       var GiphysCount = i + 1;
-
-       var $GiphysList = $("<ul>");
-       $GiphysList.addClass("list-group");
-
-       $("#Giphys-section").append($GiphysList);
-       console.log(Giphys.web_url);
-       $GiphysList.append($GiphysListItem);
-     }
-   }
-   
+    var Giphys;
+    
    // Function to empty out the Giphyss
    function clear() {
      $("#Giphys-section").empty();
@@ -47,19 +12,30 @@
    $("#run-search").on("click", function(event) {
      
      event.preventDefault();
+     var searchTerm = $("#search-term").val().trim();
+     console.log(searchTerm)
    
      
      clear();
-   
-     
-     var queryURL = buildQueryURL();
-   
-     
+
      $.ajax({
-       url: queryURL,
-       method: "GET"
-     }).then(updatePage);
+      url: "https://api.giphy.com/v1/gifs/search?q=" + searchTerm + "&api_key=i5u86hxDFgUmIDDbuFDZ6vsL4wBLI8B6",
+      method: "GET"
+    }).then(function (response) {
+      var searchLimit = $(".custom-select").val()
+      for (let i = 0; i < searchLimit; i++) {
+      console.log(response.data[i].images)
+      var searchImg = response.data[i].images.downsized_medium.url
+      var img = $("<img>");
+      img.attr("src",searchImg) 
+      $("#Giphys-section").append(img)
+
+      }
+    });
+    
+     
    });
    
  
    $("#clear-all").on("click", clear);
+  
